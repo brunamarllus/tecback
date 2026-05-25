@@ -6,7 +6,8 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 
 @SpringBootApplication
 @EnableFeignClients
-public class TechbackApplication {
+public class
+TechbackApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(TechbackApplication.class, args);

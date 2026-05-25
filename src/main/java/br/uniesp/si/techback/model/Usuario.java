@@ -3,6 +3,7 @@ package br.uniesp.si.techback.model;
 import br.uniesp.si.techback.enums.Perfil;
 import jakarta.persistence.*;
 import lombok.*;
+import java.util.List;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -45,4 +46,7 @@ public class Usuario {
 
     @Column(name = "atualizado_em")
     private LocalDateTime atualizadoEm;
+
+    @OneToMany(mappedBy = "usuario")
+    private List<Favorito> favoritos;
 }

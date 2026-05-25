@@ -36,4 +36,3 @@ public class Funcionario {
 
     private String uf;
 }
-

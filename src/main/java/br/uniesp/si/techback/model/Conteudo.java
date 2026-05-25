@@ -3,6 +3,7 @@ package br.uniesp.si.techback.model;
 import br.uniesp.si.techback.enums.TipoConteudo;
 import jakarta.persistence.*;
 import lombok.*;
+import java.util.List;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -51,4 +52,7 @@ public class Conteudo {
 
     @Column(name = "atualizado_em")
     private LocalDateTime atualizadoEm;
+
+    @OneToMany(mappedBy = "conteudo")
+    private List<Favorito> favoritos;
 }

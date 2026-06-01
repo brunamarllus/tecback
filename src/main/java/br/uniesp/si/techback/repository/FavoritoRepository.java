@@ -14,6 +14,8 @@ public interface FavoritoRepository
     @Query("""
             SELECT f
             FROM Favorito f
+            JOIN FETCH f.usuario
+            JOIN FETCH f.conteudo
             WHERE f.usuario.id = :usuarioId
             ORDER BY f.criadoEm DESC
             """)

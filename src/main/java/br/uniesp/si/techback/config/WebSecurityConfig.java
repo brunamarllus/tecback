@@ -17,6 +17,9 @@ public class WebSecurityConfig {
         http
                 .csrf(csrf ->
                         csrf.disable())
+                .headers(headers ->
+                        headers.frameOptions(frameOptions ->
+                                frameOptions.sameOrigin()))
                 .authorizeHttpRequests(auth ->
                         auth.anyRequest()
                                 .permitAll());

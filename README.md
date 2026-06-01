@@ -1,3 +1,13 @@
+# IESPFLIX Web + API
+
+- Repositório: https://github.com/brunamarllus/tecback
+
+## Integrantes
+- Integrante 1: Bruna de Oliveira Medeiros Soares
+- Integrante 2: Carlos Guilherme Saldanha da Silva
+
+######
+
 # Techback - Backend 1 Uniesp
 
 Projeto Spring Boot desenvolvido como parte da disciplina de Backend 1 da Uniesp, demonstrando boas práticas de desenvolvimento Java com arquitetura em camadas e testes abrangentes.

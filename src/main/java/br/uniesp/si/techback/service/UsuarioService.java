@@ -2,6 +2,8 @@ package br.uniesp.si.techback.service;
 
 import br.uniesp.si.techback.dto.request.UsuarioRequestDTO;
 import br.uniesp.si.techback.dto.response.UsuarioResponseDTO;
+import br.uniesp.si.techback.exception.RecursoNaoEncontradoException;
+import br.uniesp.si.techback.exception.RegraNegocioException;
 import br.uniesp.si.techback.mapper.UsuarioMapper;
 import br.uniesp.si.techback.model.Usuario;
 import br.uniesp.si.techback.repository.UsuarioRepository;
@@ -27,7 +29,7 @@ public class UsuarioService {
         if (repository.existsByEmail(
                 dto.email())) {
 
-            throw new RuntimeException(
+            throw new RegraNegocioException(
                     "Email já cadastrado"
             );
         }
@@ -87,7 +89,7 @@ public class UsuarioService {
         Usuario usuario =
                 repository.findById(id)
                         .orElseThrow(() ->
-                                new RuntimeException(
+                                new RecursoNaoEncontradoException(
                                         "Usuário não encontrado"
                                 ));
 

@@ -3,7 +3,7 @@ spring:
     name: techback
 
   datasource:
-    url: jdbc:h2:mem:iespflix
+    url: jdbc:h2:mem:iespflix;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
     username: sa
     password:
     driver-class-name: org.h2.Driver
@@ -16,7 +16,7 @@ spring:
   jpa:
     open-in-view: false
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
 
     show-sql: true
 

@@ -27,7 +27,4 @@ public interface FilmeRepository extends JpaRepository<Filme, Long> {
     Filme buscarPorGenero(@Param("genero") String gen,
                           @Param("titulo") String tit);
 
-
-
-
 }

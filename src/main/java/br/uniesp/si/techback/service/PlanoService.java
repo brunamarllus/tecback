@@ -6,18 +6,21 @@ import br.uniesp.si.techback.exception.RecursoNaoEncontradoException;
 import br.uniesp.si.techback.model.Plano;
 import br.uniesp.si.techback.repository.PlanoRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class PlanoService {
 
     private final PlanoRepository repository;
-    private String CodigoPlano;
 
     public List<PlanoResponseDTO> listarTodos() {
+
+        log.info("Listando todos os planos");
 
         return repository.findAll()
                 .stream()
@@ -29,17 +32,24 @@ public class PlanoService {
             String codigo
     ) {
 
+        log.info("Buscando plano por código={}", codigo);
+
+        CodigoPlano codigoPlano;
+        try {
+            codigoPlano = CodigoPlano.valueOf(codigo.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            log.warn("Código de plano inválido: {}", codigo);
+            throw new RecursoNaoEncontradoException("Plano não encontrado");
+        }
+
         Plano plano =
-                repository.findByCodigo(
-                                br.uniesp.si.techback.enums.CodigoPlano.valueOf(String.valueOf(br.uniesp.si.techback.enums.CodigoPlano.valueOf(
-                                        codigo.toUpperCase()
-                                )))
-                        )
-                        .orElseThrow(() ->
-                                new RecursoNaoEncontradoException(
-                                        "Plano não encontrado"
-                                )
-                        );
+                repository.findByCodigo(codigoPlano)
+                        .orElseThrow(() -> {
+                            log.warn("Plano não encontrado: codigo={}", codigo);
+                            return new RecursoNaoEncontradoException(
+                                    "Plano não encontrado"
+                            );
+                        });
 
         return converter(plano);
     }

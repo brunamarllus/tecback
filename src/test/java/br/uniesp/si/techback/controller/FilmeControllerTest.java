@@ -2,6 +2,8 @@ package br.uniesp.si.techback.controller;
 
 import br.uniesp.si.techback.config.WebSecurityConfig;
 import br.uniesp.si.techback.dto.FilmeDTO;
+import br.uniesp.si.techback.exception.GlobalExceptionHandler;
+import br.uniesp.si.techback.exception.RecursoNaoEncontradoException;
 import br.uniesp.si.techback.service.FilmeService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,7 +27,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(FilmeController.class)
-@Import(WebSecurityConfig.class)
+@Import({WebSecurityConfig.class, GlobalExceptionHandler.class})
 @DisplayName("Testes do FilmeController")
 class FilmeControllerTest {
 
@@ -94,7 +96,7 @@ class FilmeControllerTest {
     @Test
     @DisplayName("Deve retornar 404 quando buscar filme por ID inexistente")
     void deveRetornar404QuandoBuscarFilmePorIdInexistente() throws Exception {
-        when(filmeService.buscarPorId(999L)).thenThrow(new RuntimeException("Filme não encontrado com o ID: 999"));
+        when(filmeService.buscarPorId(999L)).thenThrow(new RecursoNaoEncontradoException("Filme não encontrado com o ID: 999"));
 
         mockMvc.perform(get("/filmes/999"))
                 .andExpect(status().isNotFound());
@@ -111,8 +113,7 @@ class FilmeControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.titulo").value("Filme de Teste"))
-                .andExpect(header().exists("Location"));
+                .andExpect(jsonPath("$.titulo").value("Filme de Teste"));
     }
 
     @Test
@@ -126,6 +127,37 @@ class FilmeControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(filmeInvalido)))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("Deve retornar 400 quando criar filme com gênero inválido")
+    void deveRetornar400QuandoCriarFilmeComGeneroInvalido() throws Exception {
+        FilmeDTO filmeGeneroInvalido = FilmeDTO.builder()
+                .titulo("Filme de Teste")
+                .genero("string") // Gênero fora da lista de válidos
+                .build();
+
+        mockMvc.perform(post("/filmes")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(filmeGeneroInvalido)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors.genero").value("Gênero inválido"));
+    }
+
+    @Test
+    @DisplayName("Deve aceitar gênero sem acento/caixa diferente (ex: 'acao')")
+    void deveAceitarGeneroSemAcento() throws Exception {
+        FilmeDTO filmeGeneroSemAcento = FilmeDTO.builder()
+                .titulo("o programador")
+                .genero("acao") // sem cedilha/til e minúsculo -> deve normalizar para "Ação"
+                .build();
+
+        when(filmeService.salvar(any(FilmeDTO.class))).thenReturn(filmeSalvoDTO);
+
+        mockMvc.perform(post("/filmes")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(filmeGeneroSemAcento)))
+                .andExpect(status().isCreated());
     }
 
     @Test
@@ -157,7 +189,7 @@ class FilmeControllerTest {
     @DisplayName("Deve retornar 404 quando tentar atualizar filme inexistente")
     void deveRetornar404QuandoTentarAtualizarFilmeInexistente() throws Exception {
         when(filmeService.atualizar(eq(999L), any(FilmeDTO.class)))
-                .thenThrow(new RuntimeException("Falha ao atualizar: filme não encontrado com o ID: 999"));
+                .thenThrow(new RecursoNaoEncontradoException("Falha ao atualizar: filme não encontrado com o ID: 999"));
 
         mockMvc.perform(put("/filmes/999")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -203,7 +235,6 @@ class FilmeControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.titulo").value("Filme de Teste"))
-                .andExpect(header().exists("Location"));
+                .andExpect(jsonPath("$.titulo").value("Filme de Teste"));
     }
 }

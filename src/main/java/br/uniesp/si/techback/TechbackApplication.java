@@ -8,8 +8,8 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @EnableFeignClients
 public class TechbackApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(TechbackApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(TechbackApplication.class, args);
+    }
 
 }

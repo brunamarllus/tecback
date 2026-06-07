@@ -2,34 +2,25 @@ package br.uniesp.si.techback.repository;
 
 import br.uniesp.si.techback.enums.TipoConteudo;
 import br.uniesp.si.techback.model.Conteudo;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import java.util.List;
 import java.util.UUID;
 
 public interface ConteudoRepository
         extends JpaRepository<Conteudo, UUID> {
 
-    List<Conteudo> findAllByOrderByTituloAsc();
-
-    List<Conteudo> findByGeneroIgnoreCaseOrderByTituloAsc(
-            String genero
+    Page<Conteudo> findByGeneroIgnoreCase(
+            String genero,
+            Pageable pageable
     );
 
-    List<Conteudo> findByTipo(
+    Page<Conteudo> findByTipo(
             TipoConteudo tipo,
-            Sort sort
+            Pageable pageable
     );
-
-    List<Conteudo> findTop10ByOrderByRelevanciaDesc();
-
-    List<Conteudo> findByAnoGreaterThanOrderByAnoDesc(
-            Short ano
-    );
-
-    List<Conteudo> findByTrailerUrlIsNotNull();
 
     @Query("""
             SELECT c
@@ -38,9 +29,9 @@ public interface ConteudoRepository
                 LIKE LOWER(CONCAT('%', :q, '%'))
             OR LOWER(c.sinopse)
                 LIKE LOWER(CONCAT('%', :q, '%'))
-            ORDER BY c.relevancia DESC
             """)
-    List<Conteudo> buscarPorPalavraChave(
-            String q
+    Page<Conteudo> buscarPorPalavraChave(
+            String q,
+            Pageable pageable
     );
 }

@@ -7,6 +7,7 @@ import br.uniesp.si.techback.repository.ConteudoRepository;
 import br.uniesp.si.techback.repository.FavoritoRepository;
 import br.uniesp.si.techback.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class FavoritoService {
 
@@ -25,6 +27,8 @@ public class FavoritoService {
             UUID usuarioId,
             UUID conteudoId
     ) {
+
+        log.info("Adicionando favorito: usuarioId={} conteudoId={}", usuarioId, conteudoId);
 
         Usuario usuario = usuarioRepository
                 .findById(usuarioId)
@@ -63,6 +67,8 @@ public class FavoritoService {
             UUID usuarioId,
             UUID conteudoId
     ) {
+
+        log.info("Removendo favorito: usuarioId={} conteudoId={}", usuarioId, conteudoId);
 
         FavoritoId id =
                 new FavoritoId(

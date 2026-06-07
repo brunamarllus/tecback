@@ -4,69 +4,90 @@ import br.uniesp.si.techback.dto.request.ConteudoRequestDTO;
 import br.uniesp.si.techback.dto.response.ConteudoResponseDTO;
 import br.uniesp.si.techback.enums.TipoConteudo;
 import br.uniesp.si.techback.service.ConteudoService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/conteudos")
 @RequiredArgsConstructor
+@Tag(name = "Conteúdos", description = "Catálogo de filmes e séries")
 public class ConteudoController {
 
     private final ConteudoService service;
 
     @PostMapping
-    public ConteudoResponseDTO criar(
+    @Operation(summary = "Cria um novo conteúdo")
+    public ResponseEntity<ConteudoResponseDTO> criar(
             @RequestBody
             @Valid
             ConteudoRequestDTO dto
     ) {
 
-        return service.criar(dto);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(service.criar(dto));
     }
 
     @GetMapping
-    public List<ConteudoResponseDTO>
-    listar(
+    @Operation(summary = "Lista conteúdos com filtros opcionais e paginação")
+    public ResponseEntity<Page<ConteudoResponseDTO>> listar(@RequestParam(required = false) TipoConteudo tipo,
 
-            @RequestParam(
-                    required = false
-            )
-            TipoConteudo tipo,
+                                                            @RequestParam(
+                                                                    required = false
+                                                            )
+                                                            String genero,
 
-            @RequestParam(
-                    required = false
-            )
-            String genero,
+                                                            @RequestParam(
+                                                                    required = false
+                                                            )
+                                                            String q,
 
-            @RequestParam(
-                    required = false
-            )
-            String q
+                                                            @RequestParam(
+                                                                    defaultValue = "0"
+                                                            )
+                                                            int page,
+
+                                                            @RequestParam(
+                                                                    defaultValue = "10"
+                                                            )
+                                                            int size
     ) {
 
-        return service.listar(
-                tipo,
-                genero,
-                q
+        return ResponseEntity.ok(
+                service.listar(
+                        tipo,
+                        genero,
+                        q,
+                        PageRequest.of(page, size, Sort.by("titulo"))
+                )
         );
     }
 
     @GetMapping("/{id}")
-    public ConteudoResponseDTO
+    @Operation(summary = "Busca um conteúdo por ID")
+    public ResponseEntity<ConteudoResponseDTO>
     buscarPorId(
             @PathVariable UUID id
     ) {
 
-        return service
-                .buscarPorId(id);
+        return ResponseEntity.ok(
+                service.buscarPorId(id)
+        );
     }
 
     @PutMapping("/{id}")
-    public ConteudoResponseDTO
+    @Operation(summary = "Atualiza um conteúdo existente")
+    public ResponseEntity<ConteudoResponseDTO>
     atualizar(
             @PathVariable UUID id,
 
@@ -75,17 +96,18 @@ public class ConteudoController {
             ConteudoRequestDTO dto
     ) {
 
-        return service.atualizar(
-                id,
-                dto
+        return ResponseEntity.ok(
+                service.atualizar(id, dto)
         );
     }
 
     @DeleteMapping("/{id}")
-    public void deletar(
+    @Operation(summary = "Remove um conteúdo")
+    public ResponseEntity<Void> deletar(
             @PathVariable UUID id
     ) {
 
         service.deletar(id);
+        return ResponseEntity.noContent().build();
     }
 }

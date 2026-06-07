@@ -1,5 +1,6 @@
 package br.uniesp.si.techback.dto;
 
+import br.uniesp.si.techback.validation.Genero;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,6 +21,7 @@ public class FilmeDTO {
     private String titulo;
     private String sinopse;
     private LocalDate dataLancamento;
+    @Genero
     private String genero;
     private Integer duracaoMinutos;
     private String classificacaoIndicativa;

@@ -12,6 +12,7 @@ import br.uniesp.si.techback.repository.AssinaturaRepository;
 import br.uniesp.si.techback.repository.PlanoRepository;
 import br.uniesp.si.techback.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -19,6 +20,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class AssinaturaService {
 
@@ -29,6 +31,8 @@ public class AssinaturaService {
     public AssinaturaResponseDTO criar(
             AssinaturaRequestDTO dto
     ) {
+
+        log.info("Criando assinatura: usuarioId={} planoId={}", dto.usuarioId(), dto.planoId());
 
         Usuario usuario = usuarioRepository
                 .findById(dto.usuarioId())
@@ -52,6 +56,7 @@ public class AssinaturaService {
                                 .equals(dto.usuarioId()));
 
         if (jaTemAtiva) {
+            log.warn("Usuário já possui assinatura ativa: usuarioId={}", dto.usuarioId());
             throw new RegraNegocioException(
                     "Usuário já possui uma assinatura ativa"
             );
@@ -67,10 +72,14 @@ public class AssinaturaService {
 
         repository.save(assinatura);
 
+        log.info("Assinatura criada com sucesso: id={}", assinatura.getId());
+
         return toResponse(assinatura);
     }
 
     public AssinaturaResponseDTO cancelar(UUID id) {
+
+        log.info("Cancelando assinatura: id={}", id);
 
         Assinatura assinatura = repository.findById(id)
                 .orElseThrow(() ->
@@ -79,6 +88,7 @@ public class AssinaturaService {
                         ));
 
         if (assinatura.getStatus() == StatusAssinatura.CANCELADA) {
+            log.warn("Assinatura já cancelada: id={}", id);
             throw new RegraNegocioException(
                     "Assinatura já está cancelada"
             );
@@ -88,6 +98,8 @@ public class AssinaturaService {
         assinatura.setCanceladaEm(LocalDateTime.now());
 
         repository.save(assinatura);
+
+        log.info("Assinatura cancelada com sucesso: id={}", id);
 
         return toResponse(assinatura);
     }

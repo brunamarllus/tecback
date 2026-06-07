@@ -20,7 +20,6 @@ import java.util.UUID;
 public class Conteudo {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private UUID id;
 
     @Column(nullable = false, length = 200)

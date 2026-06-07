@@ -1,6 +1,7 @@
 package br.uniesp.si.techback.service;
 
 import br.uniesp.si.techback.dto.FilmeDTO;
+import br.uniesp.si.techback.exception.RecursoNaoEncontradoException;
 import br.uniesp.si.techback.mapper.FilmeMapper;
 import br.uniesp.si.techback.model.Filme;
 import br.uniesp.si.techback.repository.FilmeRepository;
@@ -39,10 +40,6 @@ public class FilmeService {
         }
     }
 
-    /**
-     * @param id o ID do filme.
-     * @return o filme encontrado, ou lança uma exceção {@link RuntimeException} se o filme não existir.
-     */
     public FilmeDTO buscarPorId(Long id) {
         log.info("Buscando filme pelo ID: {}", id);
         Filme filme = filmeRepository.findById(id)
@@ -53,18 +50,11 @@ public class FilmeService {
                 .orElseThrow(() -> {
                     String mensagem = String.format("Filme não encontrado com o ID: %d", id);
                     log.warn(mensagem);
-                    return new RuntimeException(mensagem);
+                    return new RecursoNaoEncontradoException(mensagem);
                 });
         return filmeMapper.toDTO(filme);
     }
 
-    /**
-     * Atualiza um filme existente.
-     *
-     * @param id    o ID do filme a ser atualizado.
-     * @param filme o filme com as informações atualizadas.
-     * @return o filme atualizado.
-     */
     @Transactional
     public FilmeDTO atualizar(Long id, FilmeDTO filmeDTO) {
         log.info("Atualizando filme ID: {}", id);
@@ -82,17 +72,11 @@ public class FilmeService {
                 .orElseThrow(() -> {
                     String mensagem = String.format("Falha ao atualizar: filme não encontrado com o ID: %d", id);
                     log.warn(mensagem);
-                    return new RuntimeException(mensagem);
+                    return new RecursoNaoEncontradoException(mensagem);
                 });
         return filmeMapper.toDTO(filmeAtualizado);
     }
 
-    /**
-     * Salva um novo filme.
-     *
-     * @param filme o filme a ser salvo.
-     * @return o filme salvo.
-     */
     @Transactional
     public FilmeDTO salvar(FilmeDTO filmeDTO) {
         log.info("Salvando novo filme: {}", filmeDTO.getTitulo());
@@ -107,18 +91,13 @@ public class FilmeService {
         }
     }
 
-    /**
-     * Exclui um filme existente.
-     *
-     * @param id o ID do filme a ser excluído.
-     */
     @Transactional
     public void excluir(Long id) {
         log.info("Excluindo filme ID: {}", id);
         if (!filmeRepository.existsById(id)) {
             String mensagem = String.format("Falha ao excluir: filme não encontrado com o ID: %d", id);
             log.warn(mensagem);
-            throw new RuntimeException(mensagem);
+            throw new RecursoNaoEncontradoException(mensagem);
         }
         try {
             filmeRepository.deleteById(id);

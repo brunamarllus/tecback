@@ -8,6 +8,7 @@ import br.uniesp.si.techback.model.Usuario;
 import br.uniesp.si.techback.repository.MetodoPagamentoRepository;
 import br.uniesp.si.techback.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class MetodoPagamentoService {
 
@@ -24,6 +26,8 @@ public class MetodoPagamentoService {
     public MetodoPagamentoResponseDTO adicionar(
             MetodoPagamentoRequestDTO dto
     ) {
+
+        log.info("Adicionando método de pagamento: usuarioId={} bandeira={}", dto.usuarioId(), dto.bandeira());
 
         Usuario usuario = usuarioRepository
                 .findById(dto.usuarioId())
@@ -46,6 +50,8 @@ public class MetodoPagamentoService {
 
         repository.save(metodo);
 
+        log.info("Método de pagamento adicionado com sucesso: id={}", metodo.getId());
+
         return toResponse(metodo);
     }
 
@@ -66,7 +72,10 @@ public class MetodoPagamentoService {
 
     public void remover(UUID id) {
 
+        log.info("Removendo método de pagamento: id={}", id);
+
         if (!repository.existsById(id)) {
+            log.warn("Método de pagamento não encontrado: id={}", id);
             throw new RecursoNaoEncontradoException(
                     "Método de pagamento não encontrado"
             );

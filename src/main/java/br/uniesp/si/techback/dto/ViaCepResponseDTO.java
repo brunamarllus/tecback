@@ -15,4 +15,3 @@ public class ViaCepResponseDTO {
     @JsonProperty("erro")
     private Boolean erro;
 }
-

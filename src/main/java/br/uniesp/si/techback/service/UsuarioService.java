@@ -8,6 +8,7 @@ import br.uniesp.si.techback.mapper.UsuarioMapper;
 import br.uniesp.si.techback.model.Usuario;
 import br.uniesp.si.techback.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class UsuarioService {
 
@@ -26,9 +28,12 @@ public class UsuarioService {
             UsuarioRequestDTO dto
     ) {
 
+        log.info("Criando usuário: email={}", dto.email());
+
         if (repository.existsByEmail(
                 dto.email())) {
 
+            log.warn("Email já cadastrado: {}", dto.email());
             throw new RegraNegocioException(
                     "Email já cadastrado"
             );
@@ -55,6 +60,8 @@ public class UsuarioService {
 
         repository.save(usuario);
 
+        log.info("Usuário criado com sucesso: id={}", usuario.getId());
+
         return UsuarioMapper
                 .toResponse(usuario);
     }
@@ -64,6 +71,8 @@ public class UsuarioService {
             int page,
             int size
     ) {
+
+        log.info("Listando usuários paginados: page={} size={}", page, size);
 
         Pageable pageable =
                 PageRequest.of(
@@ -86,12 +95,16 @@ public class UsuarioService {
     public UsuarioResponseDTO
     buscarPorId(UUID id) {
 
+        log.info("Buscando usuário por id={}", id);
+
         Usuario usuario =
                 repository.findById(id)
-                        .orElseThrow(() ->
-                                new RecursoNaoEncontradoException(
-                                        "Usuário não encontrado"
-                                ));
+                        .orElseThrow(() -> {
+                            log.warn("Usuário não encontrado: id={}", id);
+                            return new RecursoNaoEncontradoException(
+                                    "Usuário não encontrado"
+                            );
+                        });
 
         return UsuarioMapper
                 .toResponse(usuario);

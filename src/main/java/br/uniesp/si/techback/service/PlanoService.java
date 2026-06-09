@@ -111,6 +111,7 @@ public class PlanoService {
     ) {
 
         return new PlanoResponseDTO(
+                plano.getId(),
                 plano.getCodigo().name(),
                 plano.getLimiteDiario(),
                 plano.getStreamsSimultaneos()

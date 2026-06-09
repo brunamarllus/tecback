@@ -50,7 +50,7 @@ public class ConteudoController {
                                                             @RequestParam(
                                                                     required = false
                                                             )
-                                                            String q,
+                                                            String buscaPalavraChave,
 
                                                             @RequestParam(
                                                                     defaultValue = "0"
@@ -67,7 +67,7 @@ public class ConteudoController {
                 service.listar(
                         tipo,
                         genero,
-                        q,
+                        buscaPalavraChave,
                         PageRequest.of(page, size, Sort.by("titulo"))
                 )
         );

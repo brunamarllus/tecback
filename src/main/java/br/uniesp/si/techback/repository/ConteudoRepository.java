@@ -26,12 +26,12 @@ public interface ConteudoRepository
             SELECT c
             FROM Conteudo c
             WHERE LOWER(c.titulo)
-                LIKE LOWER(CONCAT('%', :q, '%'))
+                LIKE LOWER(CONCAT('%', :buscaPalavraChave, '%'))
             OR LOWER(c.sinopse)
-                LIKE LOWER(CONCAT('%', :q, '%'))
+                LIKE LOWER(CONCAT('%', :buscaPalavraChave, '%'))
             """)
     Page<Conteudo> buscarPorPalavraChave(
-            String q,
+            String buscaPalavraChave,
             Pageable pageable
     );
 }

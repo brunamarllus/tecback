@@ -56,22 +56,22 @@ public class ConteudoService {
     listar(
             TipoConteudo tipo,
             String genero,
-            String q,
+            String buscaPalavraChave,
             Pageable pageable
     ) {
 
         log.info(
-                "Listando conteúdos | tipo={} genero={} q={} page={} size={}",
-                tipo, genero, q, pageable.getPageNumber(), pageable.getPageSize()
+                "Listando conteúdos | tipo={} genero={} buscaPalavraChave={} page={} size={}",
+                tipo, genero, buscaPalavraChave, pageable.getPageNumber(), pageable.getPageSize()
         );
 
         Page<Conteudo> conteudos;
 
-        if (q != null && !q.isBlank()) {
+        if (buscaPalavraChave != null && !buscaPalavraChave.isBlank()) {
 
             conteudos =
                     repository
-                            .buscarPorPalavraChave(q, pageable);
+                            .buscarPorPalavraChave(buscaPalavraChave, pageable);
 
         } else if (genero != null) {
 
